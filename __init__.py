@@ -1,43 +1,36 @@
 from cryptography.fernet import Fernet
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template_string, render_template, jsonify
+from flask import render_template
+from flask import json
+from urllib.request import urlopen
 import sqlite3
 
-app = Flask(__name__)
+
+app = Flask(name)
 
 @app.route('/')
-def hello_world():
-    return render_template('hello.html')  # Votre page d'accueil
+def home():
+    return "<h1>Bienvenue sur l'API CryptoPython</h1>"
 
-# Route d'encryptage (la clé est générée automatiquement)
-@app.route('/encrypt/', methods=['POST'])
-def encrypt_value():
-    data = request.get_json()
-    if not data or 'value' not in data:
-        return jsonify({"error": "Veuillez fournir la valeur à chiffrer."}), 400
+@app.route('/encrypt/<string:key>/<string:message>')
+def encrypt_message(key, message):
     try:
-        # Génération d'une nouvelle clé Fernet
-        key = Fernet.generate_key()
-        fernet = Fernet(key)
-        token = fernet.encrypt(data['value'].encode())
-        # On renvoie à l'utilisateur le token et la clé (la clé devra être sauvegardée pour la décryption)
-        return render_template('encrypt.html', token=token.decode(), key=key.decode())
+        key_bytes = key.encode()  # Convertir la clé en bytes
+        f = Fernet(key_bytes)  # Créer un objet Fernet avec cette clé
+        encrypted = f.encrypt(message.encode())  # Chiffrer le message
+        return encrypted.decode()  # Retourne le message chiffré
     except Exception as e:
-        return jsonify({"error": "Erreur lors de l'encryptage.", "details": str(e)}), 400
+        return f"Erreur : {str(e)}"
 
-# Route de décryptage (l'utilisateur doit fournir la clé générée précédemment et le token)
-@app.route('/decrypt/', methods=['POST'])
-def decrypt_value():
-    data = request.get_json()
-    if not data or 'value' not in data or 'key' not in data:
-        return jsonify({"error": "Veuillez fournir la clé et la valeur à déchiffrer."}), 400
+@app.route('/decrypt/<string:key>/<string:token>')
+def decrypt_message(key, token):
     try:
-        user_key = data['key']
-        fernet = Fernet(user_key.encode())
-        decrypted_bytes = fernet.decrypt(data['value'].encode())
-        decrypted_value = decrypted_bytes.decode()
-        return render_template('decrypt.html', result=decrypted_value)
+        key_bytes = key.encode()  # Convertir la clé en bytes
+        f = Fernet(key_bytes)  # Créer un objet Fernet avec cette clé
+        decrypted = f.decrypt(token.encode())  # Déchiffrer le message
+        return decrypted.decode()  # Retourne le message déchiffré
     except Exception as e:
-        return jsonify({"error": "Erreur lors de la décryption.", "details": str(e)}), 400
+        return f"Erreur : {str(e)}"
 
-if __name__ == "__main__":
-    app.run(debug=True) #action
+if name == "main":
+    app.run(debug=True)
