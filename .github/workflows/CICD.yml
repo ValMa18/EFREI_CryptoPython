@@ -9,9 +9,9 @@ jobs:
         with:
           host: "ssh-${{ secrets.USERNAME }}.alwaysdata.net"
           username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
+          key: ${{ secrets.ALWAYSDATA_KEY }}
           script: |
-            cd $HOME/www/
+            cd $HOME/www//
   Copy:
     needs: Connexion
     runs-on: ubuntu-latest
