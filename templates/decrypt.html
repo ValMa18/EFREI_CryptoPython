@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Décryption</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Résultat de la décryption</h1>
+        </header>
+        <div class="result">
+            <!-- Affichage du résultat décrypté -->
+            <p>{{ result }}</p>
+        </div>
+        <div style="text-align: center;">
+            <a href="/" class="button">Retour à l'accueil</a>
+        </div>
+    </div>
+    <footer class="footer">
+        &copy; 2025 Votre Société
+    </footer>
+</body>
+</html>
